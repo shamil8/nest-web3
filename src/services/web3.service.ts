@@ -135,6 +135,10 @@ export class Web3Service {
 
         tmpBlockNumber = res.blockNumber;
 
+        if (!this.addresses.size) {
+          return;
+        }
+
         const transaction = await this.getTransaction(res.transactionHash);
 
         if (
