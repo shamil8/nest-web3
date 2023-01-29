@@ -7,5 +7,6 @@ export interface ProviderInterface {
 
 export interface ProviderWeb3Interface {
   [Network.ETH]: ProviderInterface;
+  [Network.MATIC]: ProviderInterface;
   [Network.BSC]: ProviderInterface;
 }

@@ -19,7 +19,7 @@ type QueueNameType = { [eventName: string]: string };
 @Injectable()
 export class Web3Listener {
   /** Initialise web3 listeners */
-  public readonly web3!: NetWeb3ServiceType;
+  public readonly web3: NetWeb3ServiceType = new Map();
 
   constructor(
     private readonly web3Config: Web3Config,
@@ -27,27 +27,24 @@ export class Web3Listener {
     private readonly producerService: ProducerService,
     private readonly logger: LoggerService,
   ) {
-    this.web3 = this.initListeners();
+    this.initListeners();
 
     this.rerunWeb3();
   }
 
-  protected initListeners(): NetWeb3ServiceType {
-    const web3 = {} as NetWeb3ServiceType;
-
+  protected initListeners(): void {
     for (const net of Object.values(Network)) {
       const provider = this.web3Config.providers[net];
-
-      web3[net] = new Web3Service(
+      const web3 = new Web3Service(
         this.producerService,
         this.logger,
         net,
         provider,
         this.web3Config.privateKey,
       );
-    }
 
-    return web3;
+      this.web3.set(net, web3);
+    }
   }
 
   protected async rerunWeb3(): Promise<void> {
@@ -66,8 +63,20 @@ export class Web3Listener {
     isSubscribe = true,
     queueEnum: null | [string, string][] = null,
   ): any {
+    const web3 = this.web3.get(net);
+
+    if (!web3) {
+      throw this.logger.error(
+        'Can not find web3 instance for listen contract!',
+        {
+          stack: this.listenContract.name,
+          context: Web3Listener.name,
+        },
+      );
+    }
+
     const contractWeb3Listener = new ContractService(
-      this.web3[net],
+      web3,
       contractConfig,
       this.parserRepository,
       this.producerService,

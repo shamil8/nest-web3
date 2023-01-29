@@ -21,14 +21,24 @@ export class Web3Config {
           'PROVIDER_ETH',
           'wss://eth-mainnet.nodereal.io/ws/v1/1659dfb40aa24bbb8153a677b98064d7',
         ),
-        parseLimit: 4000,
+        parseLimit: this.configService.get<number>('PROVIDER_ETH_LIMIT', 4000),
+      },
+      [Network.MATIC]: {
+        url: this.configService.get<string>(
+          'PROVIDER_MATIC',
+          'https://polygon.llamarpc.com',
+        ),
+        parseLimit: this.configService.get<number>(
+          'PROVIDER_MATIC_LIMIT',
+          4000,
+        ),
       },
       [Network.BSC]: {
         url: this.configService.get<string>(
           'PROVIDER_BSC',
           'wss://bsc-mainnet.nodereal.io/ws/v1/64a9df0874fb4a93b9d0a3849de012d3',
         ),
-        parseLimit: 5000,
+        parseLimit: this.configService.get<number>('PROVIDER_BSC_LIMIT', 4000),
       },
     };
 
